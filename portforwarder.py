@@ -1,4 +1,10 @@
 import asyncio
+import argparse
+from pathlib import Path
+import threading
+
+__version__ = "1.0"
+__module__ = Path(__file__).stem
 
 async def handle_client(reader, writer, target_host, target_port):
     try:
@@ -21,7 +27,14 @@ async def relay(reader, writer):
     finally:
         writer.close()
 
-async def start_server(source_host, source_port, target_host, target_port, duration):
+def console_input():
+    print("Press q + enter to quit")
+    while True:
+        cmd = input()
+        if len(cmd) > 0:
+            if "q" == cmd: break
+
+async def start_server(source_host, source_port, target_host, target_port):
     server = await asyncio.start_server(
         lambda reader, writer: handle_client(reader, writer, target_host, target_port),
         source_host, source_port
@@ -30,17 +43,29 @@ async def start_server(source_host, source_port, target_host, target_port, durat
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
 
+    loop = asyncio.get_running_loop()
+
     try:
-        await asyncio.sleep(duration)
+        await loop.run_in_executor(None, console_input)
     finally:
+        print(f"Serving has finished.")
         server.close()
         await server.wait_closed()
 
 if __name__ == "__main__":
-    source_host = '192.168.1.118'  # Source host to listen on
-    source_port = 8000  # Source port to listen on
-    target_host = '127.0.0.1'  # Target host to forward connections to
-    target_port = 8888  # Target port to forward connections to
-    duration = 600  # 10 minutes in seconds
+    parser = argparse.ArgumentParser(description=f"{__module__} {__version__}")
 
-    asyncio.run(start_server(source_host, source_port, target_host, target_port, duration))
+    parser.add_argument('--source-host', type=str, required=True, help='Source host to listen on')
+    parser.add_argument('--source-port', type=int, required=True, help='Source port to listen on')
+    parser.add_argument('--target-host', type=str, required=True, help='Target port to forward connections to')
+    parser.add_argument('--target-port', type=int, required=True, help='Target port to forward connections to')
+
+    args = parser.parse_args()
+
+    asyncio.run(start_server(
+        args.source_host, 
+        args.source_port, 
+        args.target_host, 
+        args.target_port)
+    )
+    
