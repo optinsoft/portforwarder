@@ -7,12 +7,13 @@ __version__ = "1.1"
 __module__ = Path(__file__).stem
 
 async def handle_client(reader, writer, target_host, target_port, allowed_ip_list, allow_any_ip):
+    client_ip = None
     try:
         client_ip = writer.get_extra_info('peername')[0]
-        print(f"Client connected on IP {client_ip}")
+        print(f"[{client_ip}] Client connected")
         if not allow_any_ip:
             if not client_ip in allowed_ip_list:
-                print(f"Client IP denied: {client_ip}")
+                print(f"[{client_ip}] Client denied")
                 return            
         target_reader, target_writer = await asyncio.open_connection(target_host, target_port)
         await asyncio.gather(
@@ -21,6 +22,8 @@ async def handle_client(reader, writer, target_host, target_port, allowed_ip_lis
         )
     finally:
         writer.close()
+        if client_ip is not None:
+            print(f"[{client_ip}] Client disconnected")
 
 async def relay(reader, writer):
     try:
