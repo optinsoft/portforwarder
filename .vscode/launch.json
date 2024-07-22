@@ -13,8 +13,8 @@
             "args": [
                 "--source-host", "0.0.0.0",
                 "--source-port", "8000",
-                "--target-host", "127.0.0.1",
-                "--target-port", "8888",
+                "--target-host", "10.0.0.1",
+                "--target-port", "1080",
                 "--allow-ip", "127.0.0.1"
             ]
         }
