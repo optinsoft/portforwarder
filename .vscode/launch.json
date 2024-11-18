@@ -13,8 +13,9 @@
             "args": [
                 "--source-host", "0.0.0.0",
                 "--source-port", "8000",
-                "--target-host", "10.0.0.1",
+                "--target-file", "targets.txt",
                 "--target-port", "1080",
+                "--max-target-age", "10",
                 "--allow-ip", "127.0.0.1"
             ]
         }
