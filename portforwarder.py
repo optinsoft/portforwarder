@@ -46,6 +46,8 @@ async def handle_client(reader, writer, target_host, target_port, target_file, a
                     target_host_port = random_target.split(':')
                     if (len(target_host_port) >= 2) and target_host_port[0] and check_port_string(target_host_port[1]):
                         host = target_host_port[0]
+                        if host.startswith("#") or host.startswith("+") or host.startswith("*"):
+                            host = host[1:]
                         port = int(target_host_port[1])
                         targets_dict[client_ip] = (host, port, time())
                         print(f"{datetime.now()} [{client_ip}] New target from file: {host}:{port}")
