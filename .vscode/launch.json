@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--source-host", "0.0.0.0",
-                "--source-port", "8000",
+                "--source-port", "8000-8010;8020-8030",
                 "--target-file", "targets.txt",
                 "--target-port", "1080",
                 "--max-target-age", "10",
